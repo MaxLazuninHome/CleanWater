@@ -48,7 +48,7 @@ def first_echelon():
     sw['n_nitrites_in'][v] = sw['nitrite_ion'][v] * c['s_metr_nitrite_ion_n'][v]
     sw['n_nitrates_in'][v] = sw['nitrate_ion'][v] * c['s_metr_nitrate_ion_n'][v]
 
-    tp['r_anaerobic'][v] = tp['q_anaerobic'][v] / sw['q_h'][v]
+    our['r_anaerobic'][v] = tp['q_anaerobic'][v] / sw['q_h'][v]
 
     aar['s_acetate_in'][v] = sw['cod_in'][v] * c['k_acetate_cod'][v]
 
@@ -103,7 +103,7 @@ if __name__ == '__main__':
     print(f"{round(sw['n_ammonium_in'][v], 1) :<10}{sw['n_ammonium_in'][d]}")
     print(f"{round(sw['n_nitrites_in'][v], 3) :<10}{sw['n_nitrites_in'][d]}")
     print(f"{round(sw['n_nitrates_in'][v], 2) :<10}{sw['n_nitrates_in'][d]}")
-    print(f"{round(tp['r_anaerobic'][v], 2) :<10}{tp['r_anaerobic'][d]}")
+    print(f"{round(our['r_anaerobic'][v], 2) :<10}{our['r_anaerobic'][d]}")
     print(f"{round(aar['s_acetate_in'][v], 2) :<10}{aar['s_acetate_in'][d]}")
     print(f"{round(prr['p_common'][v], 1) :<10}{prr['p_common'][d]}")
     print(f"{round(cprr['delta_p_chemical'][v], 2) :<10}{cprr['delta_p_chemical'][d]}")

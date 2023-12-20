@@ -1,6 +1,5 @@
-# from InputData.SourceWater import source_water
 from Functions import to_from_json
-from Functions.abbreviation import load_input_data
+
 
 technological_parameters = {
     "c_0":
@@ -57,12 +56,6 @@ technological_parameters = {
             'description': 's - зольность, доли единицы',
             'mod': 'in'
         },
-    "r_anaerobic":
-        {
-            'value': None,
-            'description': 'Ranaer - кратность анаэробного рецикла м3/ч',
-            'mod': 'in'
-        },
     "reagent":
         {
             'value': 1,
@@ -82,13 +75,10 @@ technological_parameters = {
             'mod': 'in'
         },
 }
-_, sw, _, _ = load_input_data()
 
-technological_parameters['r_anaerobic']['volume'] = \
-    technological_parameters['q_anaerobic']['value'] / sw['q_h']['value']
-
-technological_parameters = to_from_json.from_json('technological_parameters')
+# technological_parameters = to_from_json.from_json('technological_parameters')
 
 
-# if __name__ == '__main__':
-#     to_from_json.to_json([technological_parameters], 'technological_parameters', mode='b')
+if __name__ == '__main__':
+    to_from_json.to_json([technological_parameters], 'technological_parameters', mode='b')
+    to_from_json.to_json([technological_parameters], 'technological_parameters')

@@ -31,6 +31,12 @@ output_results = {
         'description': 'Rнитр - кратность нитратного рецикла, доли Q',
         'mod': 'out'
     },
+    "r_anaerobic":
+        {
+            'value': None,
+            'description': 'Ranaer - кратность анаэробного рецикла м3/ч',
+            'mod': 'out'
+        },
     'teta_aerobic': {
         'value': None,
         'description': 'θаэр - аэробный возраст АИ, сут',
