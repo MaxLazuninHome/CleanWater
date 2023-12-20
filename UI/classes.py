@@ -91,7 +91,11 @@ class OutputFrame:
     def calculate(self):
         if self.calc == 'get':
             for name in self.names:
-                self.obj[name]['value'] = float(getattr(self, f'entry_{name}').get())
+                new_value = float(getattr(self, f'entry_{name}').get())
+                if new_value == 0:
+                    self.obj[name]['value'] = 1e-8
+                else:
+                    self.obj[name]['value'] = new_value
 
         to_json([self.obj], self.obj_name)
 
