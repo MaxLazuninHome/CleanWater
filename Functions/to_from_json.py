@@ -2,8 +2,13 @@ import json
 from Configurations import config
 
 
-def to_json(object_list, name, mode='c'):
-    path = config.JSON_PATH + ('BaseJsons/' if mode == 'b' else 'CurrentJsons/')
+def to_json(object_list, name, path='', mode='c'):
+    if mode == "b":
+        config.JSON_PATH + 'BaseJsons/'
+    elif mode == 'c':
+        path = config.JSON_PATH + 'CurrentJsons/'
+    elif mode == 's':
+        path = config.JSON_PATH + path
     total_object = dict()
     for obj in object_list:
         total_object.update(obj)
@@ -12,8 +17,13 @@ def to_json(object_list, name, mode='c'):
     file.close()
 
 
-def from_json(name, mode='c'):
-    path = config.JSON_PATH + ('BaseJsons/' if mode == 'b' else 'CurrentJsons/')
+def from_json(name, path='', mode='c'):
+    if mode == "b":
+        config.JSON_PATH + 'BaseJsons/'
+    elif mode == 'c':
+        path = config.JSON_PATH + 'CurrentJsons/'
+    elif mode == 'l':
+        path = config.JSON_PATH + path
     with open(path + name + '.json', 'r') as file:
         obj = json.load(file)
     file.close()
