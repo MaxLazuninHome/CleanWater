@@ -2,11 +2,18 @@
 build/
 Lib/
 venv/
+<<<<<<< HEAD
 dist/
 main.spec
+=======
+Jsons/CurrentJsons/constants.json
+Scripts/
+__pycash__/
+dist/
+>>>>>>> master
 pyvenv.cfg
 Обратный_расчет_2023.09.08.xlsx
 Обратный_расчет_2023.10.08_нитр_СамГТУ.xlsx
 Расчет_30.11.2023_7 аэротенк.xlsx
-__pycash__/
-Scripts/
+main.spec
+
