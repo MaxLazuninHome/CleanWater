@@ -1,22 +1,17 @@
-from tkinter import *
-
-from InputData import input_data
-from OutputData import output_data
 from Functions import functions
 from Functions.set_values import first_run
+<<<<<<< HEAD
 from UI.classes import OutputFrame, InputFrame
+=======
+from Functions.start_program import start_program
+from Functions.button_panel import create_button_panel
+from Functions.create_box import create_box
+import sys
+>>>>>>> ui_modifications
 
-first_run()
-functions.calculate_zones()
-root = Tk()
-root.title('Главное окно')
-root.update_idletasks()
-s = root.geometry()
-s = s.split('+')
-s = s[0].split('x')
-width_root = int(s[0])
-height_root = int(s[1])
+while True:
 
+<<<<<<< HEAD
 w = root.winfo_screenwidth()
 h = root.winfo_screenheight()
 w = w // 2
@@ -59,16 +54,20 @@ output = OutputFrame(inside_right_frame,
                      side='top',
                      text='Выходные параметры',
                      obj=output_data.output_data)
+=======
+    first_run()
+    functions.calculate_zones()
+    root, inside_left_frame, inside_right_frame = create_box()
 
-button = Button(inside_right_frame,
-                text='Расчитать',
-                command=lambda: functions.calculate(source_water, consts,
-                                                    construction_parameters,
-                                                    technological_parameters,
-                                                    output),
-                activebackground='gray'
-                )
-button.pack(side='top', anchor='w')
+    source_water, technological_parameters, construction_parameters, consts, output = \
+        start_program(inside_left_frame, inside_right_frame)
+>>>>>>> ui_modifications
 
+    calculate_button, save_button, load_button, close_button = \
+        create_button_panel(inside_right_frame, source_water, technological_parameters,
+                            construction_parameters, consts, output)
 
-root.mainloop()
+    load_button['command'] = lambda: functions.load_aerotank(root)
+    # consts.load()
+
+    root.mainloop()

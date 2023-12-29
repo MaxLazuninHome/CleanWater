@@ -1,5 +1,6 @@
 from tkinter import *
 from Functions.to_from_json import *
+from InputData.Constants import constants
 
 
 class MainFrame:
@@ -60,7 +61,7 @@ class MainFrame:
                 self.descriptions.append(list(self.obj.values())[i]['description'])
                 self.mod.append(list(self.obj.values())[i]['mod'])
 
-    def calculate(self):
+    def set_new_values(self):
         if self.calc == 'get':
             for name in self.names:
                 new_value = float(getattr(self, f'entry_{name}').get())
@@ -70,6 +71,11 @@ class MainFrame:
                     self.obj[name]['value'] = new_value
 
         to_json([self.obj], self.obj_name)
+
+    # def load(self):
+    #     print('uhei')
+    #     if self.obj_name == 'constants':
+    #         self.obj = constants
 
     def show_output(self):
         pass

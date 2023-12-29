@@ -6,7 +6,6 @@
 
 
 from Functions.abbreviation import abbreviation
-from Functions.set_values import first_run
 from InputData.SourceWater import source_water
 from InputData.Constants import constants
 from InputData.TechnologicalParameters import technological_parameters
@@ -62,11 +61,7 @@ def first_echelon():
         cprr['c_me_po4'][v] = cprr['delta_p_chemical'][v] / 31 * (27 + 31 + 4 * 16)
 
     axr['tkn'][v] = sw['n_ammonium_in'][v] * c['tkn_n_nh4'][v]
-    axr['l_anoxide'][v] = sw['l_in'][v]     # TODO убрали вот это слагаемое. - aar['delta_l_anaerobic'][v]
-
-    # axr['l_anoxide_diluted_out'][v] = 8.529
-    # axr['l_anoxide_diluted_out'][v] = ((sw['l_in'][v] - axr['delta_l_anoxide'][v]))
-
+    axr['l_anoxide'][v] = sw['l_in'][v]
     axr['x_b'][v] = c['cod_b'][v] * tp['a_i'][v] * (1 - tp['s'][v])
     axr['mu_max_d'][v] = c['mu_max_d_20'][v] * exp(c['hi_denitrification'][v] * (sw['temperature'][v] - 20))
     axr['b_d'][v] = c['b_d_20'][v] * exp(c['hi_denitrification'][v] * (sw['temperature'][v] - 20))
@@ -110,7 +105,6 @@ if __name__ == '__main__':
     print(f"{round(cprr['c_me_po4'][v], 2) :<10}{cprr['c_me_po4'][d]}")
     print(f"{round(axr['tkn'][v], 2) :<10}{axr['tkn'][d]}")
     print(f"{round(axr['l_anoxide'][v], 2) :<10}{axr['l_anoxide'][d]}")
-    # print(f"{round(axr['l_anoxide_diluted_out'][v], 2) :<10}{axr['l_anoxide_diluted_out'][d]}")
     print(f"{round(axr['x_b'][v], 2) :<10}{axr['x_b'][d]}")
     print(f"{round(axr['mu_max_d'][v], 1) :<10}{axr['mu_max_d'][d]}")
     print(f"{round(axr['b_d'][v], 2) :<10}{axr['b_d'][d]}")
