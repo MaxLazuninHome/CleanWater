@@ -1,5 +1,9 @@
-from tkinter import *
 from Functions.to_from_json import *
+from tkinter import *
+
+from InputData import input_data
+from Functions import functions
+from Functions.set_values import first_run
 
 
 class MainFrame:
@@ -118,26 +122,36 @@ class OutputFrame(MainFrame):
             #     graph_btn.pack(side='left')
             description.pack(side='left', expand=True)
 
-    def show_output(self):
-        if self.calc == 'set':
-            for i in range(len(self.labels_list)):
-                self.values_list_old[i]['text'] = self.labels_list[i]['text']
-                self.labels_list[i]['text'] = round(self.obj[self.names[i]]['value'], 2)
-                if float(self.labels_list[i]['text']) > float(self.values_list_old[i]['text']):
-                    self.labels_list[i].config(fg='green')
-                elif float(self.labels_list[i]['text']) < float(self.values_list_old[i]['text']):
-                    self.labels_list[i].config(fg='red')
-                else:
-                    self.labels_list[i].config(fg='black')
 
-    def change_slider(self, scale):
-        self.obj['bod_full_source']['value'] = float(scale.get())
+if __name__ == '__main__':
+    first_run()
+    functions.calculate_zones()
+    root = Tk()
+    root.title('Главное окно')
+    root.update_idletasks()
+    s = root.geometry()
+    s = s.split('+')
+    s = s[0].split('x')
+    width_root = int(s[0])
+    height_root = int(s[1])
 
+    w = root.winfo_screenwidth()
+    h = root.winfo_screenheight()
+    w = w // 2
+    h = h // 2
+    w = w - width_root // 2
+    h = h - height_root // 2
+    root.geometry('1550x750+200+100'.format(w, h))
+    inside_left_frame = Frame()
+    inside_right_frame = Frame()
+    inside_left_frame.pack(side='left', anchor='n', padx=20, fill='both', expand=True)
+    inside_right_frame.pack(side='left', anchor='n', fill='both', expand=True)
+    source_water = OutputFrame(inside_left_frame,
+                               anchor='w',
+                               calc='get',
+                               side='top',
+                               text='Вода, поступающая в аэротэнк',
+                               obj=input_data.source_water,
+                               )
 
-
-
-# if __name__ == '__main__':
-
-
-
-
+    root.mainloop()
