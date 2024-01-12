@@ -3,9 +3,16 @@ from Functions import functions
 
 
 def create_button_panel(inside_right_frame, source_water, consts, construction_parameters,
-                        technological_parameters, output):
+                        technological_parameters, output, mode='work'):
     buttons_frame = Frame(inside_right_frame)
     buttons_frame.pack(anchor='w')
+    # mode_button = Button(buttons_frame,
+    #                      text='Сменить режим',
+    #
+    #                      command=sys.exit,
+    #                      activebackground='gray'
+    #                      )
+    # mode_button.pack(side='left', anchor='w')
     calculate_button = Button(buttons_frame,
                               text='Расчитать',
                               command=lambda: functions.calculate(source_water, consts,

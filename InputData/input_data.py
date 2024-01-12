@@ -28,24 +28,7 @@ technological_parameters = {
                            }
 
 
-# c, sw, tp, cp = load_input_data()
-#
-# source_water = {
-#                     'name': 'source_water',
-#                     'value': sw
-#                 }
-# construction_parameters = {
-#                     'name': 'construction_parameters',
-#                     'value': cp
-#                           }
-# constants = {
-#                 'name': 'constants',
-#                 'value': c
-#             }
-# technological_parameters = {
-#                                 'name': 'technological_parameters',
-#                                 'value': tp
-#                            }
+
 
 if __name__ == '__main__':
     print(sw.source_water)

@@ -19,7 +19,6 @@ from OutputData.Calculate.AerobicZone.NitrficationVelocityCalculate import nitri
 from OutputData.Calculate.AerobicZone.OrganicSubstancesOxidation import organic_substances_oxidation_results
 from OutputData.Calculate.AerobicZone.SecondarySump import secondary_sump_results
 from OutputData.Output import output_results
-
 from OutputData.Calculate.AnoxideZone import anoxyde_results
 from math import exp
 

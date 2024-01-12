@@ -3,6 +3,8 @@ from Functions.to_from_json import *
 from Functions import create_box
 import pandas as pd
 from InputData import input_data
+import pprint
+from InputData.SourceWater import source_water as sow
 import time
 from InputData.Constants import constants
 
@@ -68,11 +70,12 @@ class MainFrame:
     def set_new_values(self):
         if self.calc == 'get':
             for name in self.names:
-                new_value = float(getattr(self, f'entry_{name}').get())
+                new_value = float(getattr(self, f'{name}').get())
                 if new_value == 0:
                     self.obj[name]['value'] = 1e-8
                 else:
                     self.obj[name]['value'] = new_value
+        # print(self.obj_for_save, self.obj_name)
 
         to_json([self.obj], self.obj_name)
 
@@ -101,7 +104,7 @@ class InputFrame(MainFrame):
             self.labels_list.append(value)
             description = Label(frame, anchor='w', text=self.descriptions[i])
             value.pack(side='left')
-            setattr(self, f'entry_{self.names[i]}', value)
+            setattr(self, f'{self.names[i]}', value)
             description.pack(side='left', expand=True)
 
 
@@ -116,14 +119,14 @@ class OutputFrame(MainFrame):
             self.values_list_old.append(value_old)
             value_old.pack(side='left')
             value = Label(frame, width=10, text=round(float(self.values[i]), 2))
-            setattr(self, f'label_{self.names[i]}', value)
-            setattr(self, f'label_{self.names[i]}_old', value_old)
+            setattr(self, f'{self.names[i]}', value)
+            setattr(self, f'{self.names[i]}_old', value_old)
             # graph_btn = Button(frame, text='Show Graph', command=lambda v=value: self.show_graph(v))  # <- Добавить кнопку
 
             self.labels_list.append(value)
             description = Label(frame, anchor='w', text=self.descriptions[i])
             value.pack(side='left')
-            setattr(self, f'label_{self.names[i]}', value)
+            setattr(self, f'{self.names[i]}', value)
             # if appointment == 'out':
             #     graph_btn.pack(side='left')
             description.pack(side='left', expand=True)
@@ -156,40 +159,41 @@ class WorkFrame(MainFrame):
             frame.pack(anchor='w')
 
             value = Label(frame, width=10, text=round(float(self.values[i]), 2))
-            setattr(self, f'label_{self.names[i]}', value)
+            setattr(self, f'{self.names[i]}', value)
             # graph_btn = Button(frame, text='Show Graph', command=lambda v=value: self.show_graph(v))  # <- Добавить кнопку
 
-            self.labels_list.append(value)
+            self.labels_list.append({self.names[i]: value})
             description = Label(frame, anchor='w', text=self.descriptions[i])
             value.pack(side='left')
-            setattr(self, f'label_{self.names[i]}', value)
+            setattr(self, f'{self.names[i]}', value)
             # if appointment == 'out':
             #     graph_btn.pack(side='left')
             description.pack(side='left', expand=True)
 
     def set_new_values(self):
-        tmp_df = pd.read_excel(self.exl_file)
-        self.changeble_parameters = tmp_df.keys()
-        for i in range(self.rows):
-            for name in self.changeble_parameters:
-                print(self.labels_list[i], self.obj[self.names[i]]['value'])
-                setattr(self, f'label_{name}', tmp_df[name][i])
-                
-            time.sleep(2)
+        row = pd.read_excel(self.exl_file).tail(1)
+        for el in list(row.columns):
+            for i in range(len(self.labels_list)):
+                if el == list(self.labels_list[i].keys())[0]:
+                    if not row[el].values[-1]:
+                        pass
+                    else:
+                        self.labels_list[i][el]['text'] = float(row[el].values[-1])
 
-
-
+                        self.obj[el]['value'] = float(row[el].values[-1])
+        to_json([self.obj], self.obj_name)
 
 
 if __name__ == '__main__':
     root, inside_left_frame, inside_right_frame = create_box.create_box()
     fr = WorkFrame(inside_left_frame,
+                   exl_file=config.EXCEL_PATH + 'check.xlsx',
                    anchor='w',
                    calc='get',
                    side='top',
                    text='Вода, поступающая в аэротенк',
                    obj=input_data.source_water,
-                   exl_file='D:/Max/CleanWaterMain/excels/test.xlsx')
+)
 
     save_button = Button(root,
                          text='Сохранить',

@@ -1,6 +1,4 @@
 from Functions.to_from_json import *
-
-
 from InputData.SourceWater import source_water as sw
 from InputData.TechnologicalParameters import technological_parameters as tp
 from InputData.ConstructionParameters import construction_parameters as cp
@@ -12,6 +10,7 @@ def first_run():
     sw.source_water = from_json('source_water')
     tp.technological_parameters = from_json('technological_parameters')
     cp.construction_parameters = from_json('construction_parameters')
+
 
 
 def save_values():

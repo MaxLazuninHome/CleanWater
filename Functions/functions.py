@@ -8,6 +8,7 @@ import numpy as np
 import pandas as pd
 import os
 import shutil
+import sys
 
 
 c, sw, tp, cp = load_input_data()
@@ -24,12 +25,15 @@ def calculate_zones():
 
 
 def calculate(*args):
-
     for arg in args:
         arg.set_new_values()
     calculate_zones()
     for arg in args:
         arg.show_output()
+
+def change_mode(mode):
+    mode = 'setting' if mode == 'work' else 'work'
+    return mode
 
 
 def save_aerotank(*args):
@@ -56,7 +60,7 @@ def load_aerotank(root):
         print(f"Выбранная папка: {directory}")
         # Здесь вы можете делать что угодно с выбранным путём, например сохранять в переменную
     else:
-        print("Папка не была выбрана.")
+       directory =  config.JSON_PATH + 'CurrentJsons'
 
     folder_from = directory
     folder_to = config.JSON_PATH + 'CurrentJsons'
@@ -68,7 +72,6 @@ def load_aerotank(root):
         shutil.copy(f'{folder_from}/{f}', f'{folder_to}/{f}')
     # print(sw)
     sw = from_json('source_water', path=directory[-3:] + '/', mode='l')
-    print(sw)
     root.destroy()
 
 

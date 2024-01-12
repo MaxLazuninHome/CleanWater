@@ -12,7 +12,7 @@ def to_json(object_list, name, path='', mode='c'):
     total_object = dict()
     for obj in object_list:
         total_object.update(obj)
-    print(f'{path}{name}.json')
+    # print(f'{path}{name}.json')
     with open(f'{path}{name}.json', 'w') as file:
         json.dump(total_object, file)
     file.close()
