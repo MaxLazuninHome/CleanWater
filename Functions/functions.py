@@ -25,54 +25,56 @@ def calculate_zones():
 
 
 def calculate(*args):
+
     for arg in args:
         arg.set_new_values()
     calculate_zones()
     for arg in args:
         arg.show_output()
 
+
 def change_mode(mode):
     mode = 'setting' if mode == 'work' else 'work'
     return mode
 
 
-def save_aerotank(*args):
-    user_input = simpledialog.askstring("Ввод", "Введите название:")
-    if user_input:
-        user_text = user_input
-        save_path = f'{user_text}/'
-        try:
-            # os.mkdir(save_path)
-            os.mkdir(config.JSON_PATH + save_path)
-        except FileExistsError:
-            pass
-        for arg in args:
-            # arg.set_new_values()
+# def save_aerotank(*args):
+#     user_input = simpledialog.askstring("Ввод", "Введите название:")
+#     if user_input:
+#         user_text = user_input
+#         save_path = f'{user_text}/'
+#         try:
+#             # os.mkdir(save_path)
+#             os.mkdir(config.JSON_PATH + save_path)
+#         except FileExistsError:
+#             pass
+#         for arg in args:
+#             # arg.set_new_values()
+#
+#             to_json([arg.obj], arg.obj_name, path=save_path, mode='s')
 
-            to_json([arg.obj], arg.obj_name, path=save_path, mode='s')
 
-
-def load_aerotank(root):
-
-    # Функция вызывается при нажатии на кнопку
-    directory = filedialog.askdirectory()  # Открытие диалога для выбора папки
-    if directory:  # Проверка, что пользователь выбрал папку
-        print(f"Выбранная папка: {directory}")
-        # Здесь вы можете делать что угодно с выбранным путём, например сохранять в переменную
-    else:
-       directory =  config.JSON_PATH + 'CurrentJsons'
-
-    folder_from = directory
-    folder_to = config.JSON_PATH + 'CurrentJsons'
-
-    for f in os.listdir(folder_from):
-        # print(f'{folder_from}/{f}')
-        # if os.path.isfile(os.path.join(folder_from, f)):
-        #     print(os.path.join(folder_from, f), os.path.join(folder_to, f))
-        shutil.copy(f'{folder_from}/{f}', f'{folder_to}/{f}')
-    # print(sw)
-    sw = from_json('source_water', path=directory[-3:] + '/', mode='l')
-    root.destroy()
+# def load_aerotank(root):
+#
+#     # Функция вызывается при нажатии на кнопку
+#     directory = filedialog.askdirectory()  # Открытие диалога для выбора папки
+#     if directory:  # Проверка, что пользователь выбрал папку
+#         print(f"Выбранная папка: {directory}")
+#         # Здесь вы можете делать что угодно с выбранным путём, например сохранять в переменную
+#     else:
+#        directory =  config.JSON_PATH + 'CurrentJsons'
+#
+#     folder_from = directory
+#     folder_to = config.JSON_PATH + 'CurrentJsons'
+#
+#     for f in os.listdir(folder_from):
+#         # print(f'{folder_from}/{f}')
+#         # if os.path.isfile(os.path.join(folder_from, f)):
+#         #     print(os.path.join(folder_from, f), os.path.join(folder_to, f))
+#         shutil.copy(f'{folder_from}/{f}', f'{folder_to}/{f}')
+#     # print(sw)
+#     sw = from_json('source_water', path=directory[-3:] + '/', mode='l')
+#     root.destroy()
 
 
 

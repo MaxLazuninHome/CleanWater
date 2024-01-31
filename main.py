@@ -1,10 +1,9 @@
-from Functions import functions
+from Functions import functions, graph
 from Functions.set_values import first_run
 from Functions.start_program import *
-from Functions.button_panel import create_button_panel
+from Functions.button_panel import create_setting_button_panel, create_work_button_panel
 from Functions.create_box import create_box
 from excels.Monitor import excel_monitor
-from excels.Monitor import functions as f
 import threading
 import time
 
@@ -24,42 +23,43 @@ def monitor_filesystem():
 mode = 'work'
 # mode = 'setting'
 
-while True:
-    if mode == 'setting':
+if mode == 'setting':    # Для отладочного режима работы
+    first_run()          # Загрузка значений из JSON-файлов
+    functions.calculate_zones()        # Первый расчёт для вывода основного окна
 
+    root, inside_left_frame, inside_right_frame = create_box()     # Создаём основное окно программы и внутренние рамки
 
-        first_run()
-        functions.calculate_zones()
-        root, inside_left_frame, inside_right_frame = create_box()
+    source_water, technological_parameters, construction_parameters, consts, output = \
+        start_program_setting_mode(inside_left_frame, inside_right_frame)    # Создаём рамки под параметры
 
-        source_water, technological_parameters, construction_parameters, consts, output = \
-            start_program_setting_mode(inside_left_frame, inside_right_frame)
+    calculate_button, graph_button = create_setting_button_panel(inside_right_frame,   # Создаём панель кнопок
+                                                                 source_water,
+                                                                 technological_parameters,
+                                                                 construction_parameters, consts, output)
+    graph_button['command'] = lambda: graph.choose_columns_and_plot(root)
+    # load_button['command'] = lambda: functions.load_aerotank(root)
 
-        calculate_button, save_button, load_button, close_button = \
-            create_button_panel(inside_right_frame, source_water, technological_parameters,
-                                construction_parameters, consts, output)
+    root.mainloop()
 
-        load_button['command'] = lambda: functions.load_aerotank(root)
+elif mode == 'work':    # Для рабочего режима
 
-        root.mainloop()
+    excel_monitoring_thread = threading.Thread(target=monitor_filesystem,    # Создаём поток
+                                               daemon=True)                  # для мониторщика событий ФС
 
-    elif mode == 'work':
+    first_run()     # Загрузка значений из JSON-файлов
+    functions.calculate_zones()    # Первый расчёт для вывода основного окна
+    root, inside_left_frame, inside_right_frame = create_box()   # Создаём основное окно программы и внутренние рамки
 
-        excel_monitoring_thread = threading.Thread(target=monitor_filesystem, daemon=True)
+    source_water, technological_parameters, output = start_program_work_mode(inside_left_frame, inside_right_frame)   # Создаём рамки под параметры
 
-        first_run()
-        functions.calculate_zones()
-        root, inside_left_frame, inside_right_frame = create_box()
+    excel_monitor = excel_monitor.ExcelMonitor(obj_list=[source_water, technological_parameters, output],   # Создаем мониторщиека событий ФС
+                                               root=root, )
 
-        work_frame, output = \
-            start_program_work_mode(inside_left_frame, inside_right_frame)
-        excel_monitor = excel_monitor.ExcelMonitor(obj_list=[work_frame, output], root=root, )
-        # calculate_button, save_button, load_button, close_button = \
-        #     create_button_panel(inside_right_frame, source_water, technological_parameters,
-        #                         construction_parameters, consts, output)
+    graph_button = create_work_button_panel(inside_right_frame)     # СОздаём панель кнопок
+    graph_button['command'] = lambda: graph.choose_columns_and_plot(root)
 
-        # load_button['command'] = lambda: functions.load_aerotank(root)
+    # load_button['command'] = lambda: functions.load_aerotank(root)
 
-        excel_monitoring_thread.start()
-        root.mainloop()
+    excel_monitoring_thread.start()    # Активация поток мониторщика событий
+    root.mainloop()
 

@@ -5,9 +5,6 @@ from InputData.TechnologicalParameters import technological_parameters as tp
 from InputData.ConstructionParameters import construction_parameters as cp
 from InputData.Constants import constants as c
 
-
-
-
 # Данный файл объединяет все импорты в один словарь для подачи его в объект UI для отображения входных параметров
 
 source_water = {
@@ -26,8 +23,6 @@ technological_parameters = {
                                 'name': 'technological_parameters',
                                 'value': tp.technological_parameters
                            }
-
-
 
 
 if __name__ == '__main__':

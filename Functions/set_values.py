@@ -12,7 +12,6 @@ def first_run():
     cp.construction_parameters = from_json('construction_parameters')
 
 
-
 def save_values():
 
     to_json([sw.source_water], 'source_water')

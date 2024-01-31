@@ -2,14 +2,13 @@ from tkinter import *
 from Functions.to_from_json import *
 from Functions import create_box
 from Functions.set_values import first_run
+from Functions.functions import calculate
 from copy import deepcopy
-import pandas as pd
 from InputData import input_data
 from OutputData import output_data
-import time
-from InputData.Constants import constants
-import pprint
-from InputData.SourceWater import source_water as sow
+from UI.entry_with_help import ToolTip
+import pandas as pd
+from tkinter import simpledialog
 
 
 class MainFrame:
@@ -26,12 +25,9 @@ class MainFrame:
         event.widget.tk_focusPrev().focus()
         return "break"
 
-    # def show_graph(value):  # <- Добавить метод show_graph
-    #     # здесь ваш код для отображения графика в зависимости от значения
-    #     print(f'Showing graph for value: {value}')
-
     def __init__(self, master, anchor, obj, side='top', text='Главное окно программы'):
         self.obj = deepcopy(obj['value'])
+
         self.obj_for_save = obj['value']
         self.obj_name = obj['name']
         self.main_frame = LabelFrame(master, text=text, width=600, height=150)
@@ -54,48 +50,91 @@ class MainFrame:
         self.canvas.create_window((0, 0), window=self.inner_frame, anchor='nw', width=600)
         self.inner_frame.bind('<Configure>', lambda x: self.canvas.configure(scrollregion=self.canvas.bbox('all')))
 
-    # def load(self):
-    #     print('uhei')
-    #     if self.obj_name == 'constants':
-    #         self.obj = constants
-
     def show_output(self):
         pass
 
     def set_new_values(self):
         pass
 
+    def check_value(self, value, min_value, max_value):
+
+        if value > max_value or value < min_value:
+            correct_value = None
+            # В цикле просим пользователя ввести корректное значение
+            while correct_value is None:
+                # Открываем окно с просьбой ввести корректное значение
+                user_input = simpledialog.askstring(
+                    title="Wrong value",
+                    prompt=f"Enter a value between {min_value} and {max_value}:"
+                )
+
+                # Проверяем, что пользователь ввел число
+                if user_input is not None:
+                    try:
+                        correct_value = float(user_input)
+                    except ValueError:
+                        continue  # Не удалось преобразовать введенный текст в число
+
+                    # Проверяем, что значение входит в указанный диапазон
+                    if min_value <= correct_value <= max_value:
+                        return correct_value
+                    else:
+                        correct_value = None  # Если значение не подходит, продолжаем цикл
+        else:
+            return value
+
 
 class InputFrame(MainFrame):
+    @staticmethod
+    def create_entry_with_tooltip(parent, obj):
+        entry = Entry(parent, width=20)
+        entry.insert(0, round(float(obj['value']), 3), )
+        entry.pack()
+        ToolTip(entry, obj)
+        return entry
 
-    def __init__(self, master, anchor, obj, side, text):
+    def __init__(self, master, anchor, obj, side, text, check_value=True):
         super().__init__(master, anchor, obj, side, text)
+        self.check = check_value
 
         for el, params in self.obj.items():
             if params['mod']:
                 frame = Frame(self.inner_frame, height=30)
                 frame.pack(anchor='w')
 
-                value = Entry(frame, width=20)
-                value.insert(0, round(float(params['value']), 3))
+                value = self.create_entry_with_tooltip(parent=frame,
+                                                       obj=params,
+                                                       )
+
                 value.bind("<Down>", self.focus_next_widget)
                 value.bind("<Up>", self.focus_previous_widget)
                 value.pack(side='left')
+
                 params['ui_element'] = value
+
                 description = Label(frame, anchor='w', text=params['description'])
                 description.pack(side='left', expand=True)
 
     def set_new_values(self):
-        print('set_new_values  в ', self.obj_name)
         for el, params in self.obj.items():
             if params['mod']:
                 new_value = float(params['ui_element'].get())
-                if new_value == 0:
+                if self.check:
+                    correct_value = self.check_value(value=new_value,
+                                                     min_value=params['min_value'],
+                                                     max_value=params['max_value'])
+                    params['ui_element'].delete(0, END)
+                    params['ui_element'].insert(0, round(correct_value, 2))
+                else:
+                    correct_value = new_value
+
+                if correct_value == 0:
                     params['value'] = 1e-8
                     self.obj_for_save[el]['value'] = 1e-8
                 else:
-                    params['value'] = new_value
-                    self.obj_for_save[el]['value'] = new_value
+                    params['value'] = correct_value
+                    self.obj_for_save[el]['value'] = correct_value
+
         to_json([self.obj_for_save], self.obj_name)
 
 
@@ -117,69 +156,73 @@ class OutputFrame(MainFrame):
                 params['ui_element'] = value
                 params['ui_element_old'] = value_old
 
-                # graph_btn = Button(frame, text='Show Graph', command=lambda v=value: self.show_graph(v))  # <- Добавить кнопку
-
                 description = Label(frame, anchor='w', text=params['description'])
-
-                #     graph_btn.pack(side='left')
                 description.pack(side='left', expand=True)
 
     def show_output(self):
+
         for el, params in self.obj.items():
             params['value_old'] = float(params['ui_element']['text'])
             params['ui_element_old']['text'] = params['ui_element']['text']
-            params['ui_element']['text'] = round(params['value'], 2)
+            params['ui_element']['text'] = round(self.obj_for_save[el]['value'], 2)
 
-            if round(params['value'], 2) > round(params['value_old'], 2):
+            if round(self.obj_for_save[el]['value'], 2) > round(params['value_old'], 2):
                 params['ui_element'].config(fg='green')
-            elif round(params['value'], 2) < round(params['value_old'], 2):
+            elif round(self.obj_for_save[el]['value'], 2) < round(params['value_old'], 2):
                 params['ui_element'].config(fg='red')
             else:
                 params['ui_element'].config(fg='black')
-
 
     # def change_slider(self, scale):
     #     self.obj['bod_full_source']['value'] = float(scale.get())
 
 
-# class WorkFrame(MainFrame):
-#     def __init__(self, master, anchor, obj, calc, side, text, exl_file, time_update=2, rows=10):
-#         super().__init__(master, anchor, obj, calc, side, text)
-#         self.exl_file = exl_file  # Путь к отслеживаемому exel-файлу
-#         self.time_update = time_update  # Время обновления
-#         self.rows = rows  # Количество обновляемых строк (для постройки графика
-#         self.changeble_parameters = []  # Изменяемые параметры (Названия столбцов exel-файла)
-#         for i in range(len(self.names)):
-#             frame = Frame(self.inner_frame, height=30)
-#             frame.pack(anchor='w')
-#
-#             value = Label(frame, width=10, text=round(float(self.values[i]), 2))
-#             setattr(self, f'label_{self.names[i]}', value)
-#             # graph_btn = Button(frame, text='Show Graph', command=lambda v=value: self.show_graph(v))  # <- Добавить кнопку
-#
-#             self.labels_list.append(value)
-#             description = Label(frame, anchor='w', text=self.descriptions[i])
-#             value.pack(side='left')
-#             setattr(self, f'label_{self.names[i]}', value)
-#             # if appointment == 'out':
-#             #     graph_btn.pack(side='left')
-#             description.pack(side='left', expand=True)
-#
-#     def set_new_values(self):
-#         tmp_df = pd.read_excel(self.exl_file)
-#         self.changeble_parameters = tmp_df.keys()
-#         for i in range(self.rows):
-#             for name in self.changeble_parameters:
-#                 print(self.labels_list[i], self.obj[self.names[i]]['value'])
-#                 setattr(self, f'label_{name}', tmp_df[name][i])
-#
-#             time.sleep(2)#
+class WorkFrame(MainFrame):
+    def __init__(self, master, anchor,  obj, side, text, exl_file):
+        super().__init__(master, anchor,  obj, side, text)
+        self.exl_file = exl_file                  # Путь к отслеживаемому exel-файлу
+        self.labels_list = []
+        for el, params in self.obj.items():
+            if params['mod']:
+                frame = Frame(self.inner_frame, height=30)
+                frame.pack(anchor='w')
 
-#
+                value = Label(frame, width=10, text=round(float(params['value']), 2))
+                value.pack(side='left')
+
+                params['ui_element'] = value
+
+                description = Label(frame, anchor='w', text=params['description'])
+                description.pack(side='left', expand=True)
+
+    def set_new_values(self):
+        row = pd.read_excel(self.exl_file).tail(1)
+        for el, params in self.obj.items():
+            if params['mod']:
+                index = row.last_valid_index()          # Получаем индекс последней используемой строки
+                new_value = float(row.loc[index, el])   # Забираем значение из ячейки
+                if new_value == 0:                      # Если нулевое
+                    params['value'] = 1e-8              # Присваиваем маленькое ненулевое значение
+                    self.obj_for_save[el]['value'] = 1e-8    # Для избежания ошибки деления на ноль
+                    params['ui_element']['text'] = 0
+                else:
+                    params['value'] = new_value
+                    self.obj_for_save[el]['value'] = new_value
+                    params['ui_element']['text'] = new_value
+        to_json([self.obj_for_save], self.obj_name)
+
+
 if __name__ == '__main__':
     first_run()
     root, inside_left_frame, inside_right_frame = create_box.create_box()
-    fr = OutputFrame(inside_left_frame,
+    fri = WorkFrame(inside_left_frame,
+                    exl_file=config.INPUT_DATA,
+                    anchor='w',
+                    side='top',
+                    text='Вода, поступающая в аэротенк',
+                    obj=input_data.source_water,
+                    )
+    fro = OutputFrame(inside_left_frame,
                     anchor='w',
                     side='top',
                     text='Вода, поступающая в аэротенк',
@@ -188,7 +231,7 @@ if __name__ == '__main__':
 
     save_button = Button(root,
                          text='Сохранить',
-                         command=lambda: fr.check(),
+                         command=lambda: calculate(fri, fro),
 
                          activebackground='gray'
                          )
